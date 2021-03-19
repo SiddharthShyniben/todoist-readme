@@ -3,8 +3,6 @@ const axios = require("axios");
 // const Humanize = require("humanize-plus");
 const fs = require("fs");
 const exec = require("./exec");
-const { JSDOM } = require("jsdom");
-
 const TODOIST_API_KEY = core.getInput("TODOIST_API_KEY");
 const PREMIUM = core.getInput("PREMIUM");
 
@@ -70,10 +68,11 @@ const buildReadme = (prevReadmeContent, data) => {
               karma <= 19999 ? "Master" :
                 karma <= 49999 ? "Grandmaster" : "Enlightened";
   
-  const { document } = new JSDOM(prevReadmeContent).window;
-  document.querySelectorAll("td-karma-level").forEach(element => element.innerText = parsedData.karmaLevel);
-  core.info("Data" + JSON.stringify(parsedData));
-  return document.body.innerHTML;
+  let newContent = prevReadmeContent.replace(/<td-karma-level>.*<\/td-karma-level>/g, `<td-karma-level>${parsedData.karmaLevel}<\/td-karma-level>`);
+
+  // Code...
+  
+  return newContent;
 };
 
 const commitReadme = async () => {
