@@ -15,22 +15,20 @@
    - if you're new to Todoist, then you can refer [here](#new-to-todoist).
 2. You need to save the Todoist API Token in the repository secrets. You can find that in the Settings of your Repository. Be sure to save those as the following.
    - `TODOIST_API_KEY = <your todoist API token>`
-3. You need to update the README file(README.md) with some comments. You can refer [here](#update-your-readme) for updating it.
+3. You need to update the README file(README.md) with some tags. You can refer [here](#update-your-readme) for updating it.
 
 ## Update your README
 
-Add a comment to your `README.md` like this:
+Add tags to your `README.md` like this:
 
 ```markdown
 # Todoist Stats
 
-<!-- TODOIST:START -->
-<!-- TODOIST:END -->
+Hello, my name is Siddharth. I am a Todoist **<td-karma-level></td-karma-level>**
 ```
+### Available tags:
 
-<!-- TODO: Add more comments -->
-
-These lines will be our entry-points for the todoist stats.
+Coming soon
 
 ## New to Todoist
 

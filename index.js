@@ -71,7 +71,7 @@ const buildReadme = (prevReadmeContent, data) => {
                 karma <= 49999 ? "Grandmaster" : "Enlightened";
   
   const { document } = new JSDOM(prevReadmeContent).window;
-  document.querySelectorAll("todoist karma-level").forEach(element => element.innerHTML = parsedData.karmaLevel);
+  document.querySelectorAll("td-karma-level").forEach(element => element.innerHTML = parsedData.karmaLevel);
   return document.body.innerHTML;
 };
 
