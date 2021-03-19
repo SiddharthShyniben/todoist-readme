@@ -3,59 +3,23 @@ const axios = require("axios");
 const Humanize = require("humanize-plus");
 const fs = require("fs");
 const exec = require("./exec");
+const { JSDOM } = require("jsdom");
 
 const TODOIST_API_KEY = core.getInput("TODOIST_API_KEY");
 const PREMIUM = core.getInput("PREMIUM");
 
 async function main() {
-  const stats = await axios(
-    `https://api.todoist.com/sync/v8.3/completed/get_stats?token=${TODOIST_API_KEY}`
-  );
+  const stats = await axios(`https://api.todoist.com/sync/v8.3/completed/get_stats?token=${TODOIST_API_KEY}`);
   await updateReadme(stats.data);
 }
 
-let todoist = [];
 let jobFailFlag = false;
 const README_FILE_PATH = "./README.md";
 
 async function updateReadme(data) {
-  const { karma, completed_count, days_items, goals, week_items } = data;
-
-  const karmaPoint = [`🏆  **${Humanize.intComma(karma)}** Karma Points`];
-  todoist.push(karmaPoint);
-
-  const dailyGoal = [
-    `🌸  Completed **${days_items[0].total_completed.toString()}** tasks today`,
-  ];
-  todoist.push(dailyGoal);
-
-  if (PREMIUM == "true") {
-    const weekItems = [
-      `🗓  Completed **${week_items[0].total_completed.toString()}** tasks this week`,
-    ];
-    todoist.push(weekItems);
-  }
-
-  const totalTasks = [
-    `✅  Completed **${Humanize.intComma(completed_count)}** tasks so far`,
-  ];
-  todoist.push(totalTasks);
-
-  const longestStreak = [
-    `⏳  Longest streak is **${goals.max_daily_streak.count}** days`,
-  ];
-  todoist.push(longestStreak);
-
-  if (todoist.length == 0) return;
-
-  if (todoist.length > 0) {
-    // console.log(todoist.length);
-    // const showTasks = todoist.reduce((todo, cur, index) => {
-    //   return todo + `\n${cur}        ` + (((index + 1) === todoist.length) ? '\n' : '');
-    // })
+  if (data) {
     const readmeData = fs.readFileSync(README_FILE_PATH, "utf8");
-
-    const newReadme = buildReadme(readmeData, todoist.join("           \n"));
+    const newReadme = buildReadme(readmeData, data);
     if (newReadme !== readmeData) {
       core.info("Writing to " + README_FILE_PATH);
       fs.writeFileSync(README_FILE_PATH, newReadme);
@@ -72,39 +36,43 @@ async function updateReadme(data) {
   }
 }
 
-// console.log(todoist.length);
 
-const buildReadme = (prevReadmeContent, newReadmeContent) => {
-  const tagToLookFor = "<!-- TODO-IST:";
-  const closingTag = "-->";
-  const startOfOpeningTagIndex = prevReadmeContent.indexOf(
-    `${tagToLookFor}START`
-  );
-  const endOfOpeningTagIndex = prevReadmeContent.indexOf(
-    closingTag,
-    startOfOpeningTagIndex
-  );
-  const startOfClosingTagIndex = prevReadmeContent.indexOf(
-    `${tagToLookFor}END`,
-    endOfOpeningTagIndex
-  );
-  if (
-    startOfOpeningTagIndex === -1 ||
-    endOfOpeningTagIndex === -1 ||
-    startOfClosingTagIndex === -1
-  ) {
-    core.error(
-      `Cannot find the comment tag on the readme:\n<!-- ${tagToLookFor}:START -->\n<!-- ${tagToLookFor}:END -->`
-    );
-    process.exit(1);
-  }
-  return [
-    prevReadmeContent.slice(0, endOfOpeningTagIndex + closingTag.length),
-    "\n",
-    newReadmeContent,
-    "\n",
-    prevReadmeContent.slice(startOfClosingTagIndex),
-  ].join("");
+const buildReadme = (prevReadmeContent, data) => {
+  // Data needed: 
+  // Karma Level
+  // Karma Count
+  // Total tasks completed
+  // Current Daily streak
+  // Current weekly streak
+  // Max daily streak
+  // Max weekly streak
+  // Karma Activity
+  // Karma Trend Graph
+  
+  const parsedData = {
+    lastKarmaUpdate: data.karma_last_update,
+    karmaTrend: data.karma_trend,
+    // days_items: not needed
+    tasksCompleted: data.completed_count,
+    karma: data.karma,
+    // week_items: not needed
+    goals: data.goals,
+    karmaActivity: data.karma_update_reasons
+  };
+  
+  let karma = data.karma;
+  parseData.karmaLevel =
+    karma <= 499 ? "Beginner" :
+      karma <= 2499 ? "Novice" :
+        karma <= 4999 ? "Intermediate" :
+          karma <= 7499 ? "Professional" :
+            karma <= 9999 ? "Expert" :
+              karma <= 19999 ? "Master" :
+                karma <= 49999 ? "Grandmaster" : "Enlightened";
+  
+  const { document } = new JSDOM(prevReadmeContent).window;
+  document.querySelectorAll("todoist karma-level").forEach(element => element.innerHTML = parsedData.karmaLevel);
+  return document.body.innerHTML;
 };
 
 const commitReadme = async () => {
@@ -124,6 +92,4 @@ const commitReadme = async () => {
   process.exit(jobFailFlag ? 1 : 0);
 };
 
-(async () => {
-  await main();
-})();
+(async () => await main())();

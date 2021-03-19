@@ -1,13 +1,14 @@
 {
   "name": "todoist-readme",
-  "version": "0.0.7",
-  "description": "🚧 Updates README with your Todoist stats",
+  "version": "0.1.0",
+  "description": " Updates README with your Todoist stats",
   "main": "index.js",
   "dependencies": {
     "@actions/core": "^1.2.5",
     "axios": "^0.20.0",
     "child_process": "^1.0.2",
     "humanize-plus": "^1.8.2",
+    "jsdom": "^16.4.0",
     "process": "^0.11.10"
   },
   "devDependencies": {
