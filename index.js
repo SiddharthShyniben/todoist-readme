@@ -1,6 +1,6 @@
 const core = require("@actions/core");
 const axios = require("axios");
-const Humanize = require("humanize-plus");
+// const Humanize = require("humanize-plus");
 const fs = require("fs");
 const exec = require("./exec");
 const { JSDOM } = require("jsdom");

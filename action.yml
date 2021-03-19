@@ -1,5 +1,5 @@
 name: 'README with Todoist'
-author: Abhishek Naidu
+author: Siddharth Shyniben
 description: 'Updates README with your Todoist stats'
 
 inputs:
@@ -19,7 +19,7 @@ inputs:
 
 runs:
   using: "node12"
-  main: "dist/index.js"
+  main: "index.js"
 
 branding:
   icon: "check-square"
