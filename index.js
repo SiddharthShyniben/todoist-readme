@@ -77,7 +77,7 @@ const buildReadme = (prevReadmeContent, data) => {
 
 const commitReadme = async () => {
   // Getting config
-  const committerUsername = "Abhishek Naidu";
+  const committerUsername = "SidharthShyniben";
   const committerEmail = "example@gmail.com";
   const commitMessage = "Todoist updated.";
   // Doing commit and push
