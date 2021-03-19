@@ -74,8 +74,7 @@ Don't forget to change the PREMIUM property to true if you are premium
 ```markdown
 # Todoist Stats
 
-<!-- TODO-IST:START -->
-<!-- TODO-IST:END -->
+In Todoist, I am a **<td-karma-level></td-karma-level>** ...
 ```
 
 6. Go to Workflows menu (mentioned in step 1), click `Todoist Readme`, and click `Run workflow`.
