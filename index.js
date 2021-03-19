@@ -61,7 +61,7 @@ const buildReadme = (prevReadmeContent, data) => {
   };
   
   let karma = data.karma;
-  parseData.karmaLevel =
+  parsedData.karmaLevel =
     karma <= 499 ? "Beginner" :
       karma <= 2499 ? "Novice" :
         karma <= 4999 ? "Intermediate" :
