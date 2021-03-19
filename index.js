@@ -72,7 +72,7 @@ const buildReadme = (prevReadmeContent, data) => {
   
   const { document } = new JSDOM(prevReadmeContent).window;
   document.querySelectorAll("td-karma-level").forEach(element => element.innerText = parsedData.karmaLevel);
-  core.info(parsedData);
+  core.info("Data" + JSON.stringify(parsedData));
   return document.body.innerHTML;
 };
 
