@@ -68,7 +68,9 @@ const buildReadme = (prevReadmeContent, data) => {
               karma <= 19999 ? "Master" :
                 karma <= 49999 ? "Grandmaster" : "Enlightened";
   
-  let newContent = prevReadmeContent.replace(/<td-karma-level>.*<\/td-karma-level>/g, `<td-karma-level>${parsedData.karmaLevel}<\/td-karma-level>`);
+  let newContent = prevReadmeContent
+    .replace(/<td-karma-level>.*<\/td-karma-level>/g, `<td-karma-level>${parsedData.karmaLevel}</td-karma-level>`)
+    .replace(/<td-karma>.*<\/td-karma>/g, `<td-karma>${parsedData.karma}</td-karma>`);
 
   // Code...
   
