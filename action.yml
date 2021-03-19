@@ -1,4 +1,4 @@
-name: 'Todoist Readme'
+name: 'README with Todoist'
 author: Abhishek Naidu
 description: 'Updates README with your Todoist stats'
 
@@ -22,5 +22,5 @@ runs:
   main: "dist/index.js"
 
 branding:
-  icon: "activity"
+  icon: "check-square"
   color: "red"
