@@ -703,8 +703,8 @@ const buildReadme = (prevReadmeContent, data) => {
   });
 
   let tags = [
-    [/<td-kl>.*<\/td-kl>/g, `<td-kl>${parsedData.karma_level}</td-kl>`],
-    [/<td-k>.*<\/td-k>/g, `<td-k>${parsedData.karma}</td-k>`],
+    // [/<td-kl>.*<\/td-kl>/g, `<td-kl>${parsedData.karma_level}</td-kl>`],
+    // [/<td-k>.*<\/td-k>/g, `<td-k>${parsedData.karma}</td-k>`],
     [/<td-ttc>.*<\/td-ttc>/g, `<td-ttc>${parsedData.completed_count}</td-ttc>`],
     [/<td-cdsc>.*<\/td-cdsc>/g, `<td-cdsc>${parsedData.goals.current_daily_streak.count}</td-cdsc>`],
     [/<td-cdsf>.*<\/td-cdsf>/g, `<td-cdsf>${parsedData.goals.current_daily_streak.start}</td-cdsf>`],
@@ -714,8 +714,16 @@ const buildReadme = (prevReadmeContent, data) => {
     [/<td-cwst>.*<\/td-cwst>/g, `<td-cwst>${parsedData.goals.current_weekly_streak.end}</td-cwst>`]
   ];
 
-  let newContent = prevReadmeContent;
-  tags.forEach(tag => newContent.replace(tag[0], tag[1]));
+  let newContent = prevReadmeContent
+    .replace(/<td-kl>.*<\/td-kl>/g, `<td-kl>${parsedData.karma_level}</td-kl>`)
+    .replace(/<td-k>.*<\/td-k>/g, `<td-k>${parsedData.karma}</td-k>`)
+    .replace(/<td-ttc>.*<\/td-ttc>/g, `<td-ttc>${parsedData.completed_count}</td-ttc>`)
+    .replace(/<td-cdsc>.*<\/td-cdsc>/g, `<td-cdsc>${parsedData.goals.current_daily_streak.count}</td-cdsc>`)
+    .replace(/<td-cdsf>.*<\/td-cdsf>/g, `<td-cdsf>${parsedData.goals.current_daily_streak.start}</td-cdsf>`)
+    .replace(/<td-cdst>.*<\/td-cdst>/g, `<td-cdst>${parsedData.goals.current_daily_streak.end}</td-cdst>`)
+    .replace(/<td-cwsc>.*<\/td-cwsc>/g, `<td-cwsc>${parsedData.goals.current_weekly_streak.count}</td-cwsc>`)
+    .replace(/<td-cwsf>.*<\/td-cwsf>/g, `<td-cwsf>${parsedData.goals.current_weekly_streak.start}</td-cwsf>`)
+    .replace(/<td-cwst>.*<\/td-cwst>/g, `<td-cwst>${parsedData.goals.current_weekly_streak.end}</td-cwst>`);
   return newContent;
 };
 
