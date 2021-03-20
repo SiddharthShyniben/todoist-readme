@@ -81,15 +81,15 @@ const buildReadme = (prevReadmeContent, data) => {
   });
 
   let tags = [
-    [/<(td-karma-level|tdkl)>.*<\/(td-karma-level|tdkl)>/g, `<$1>${parsedData.karma_level}</$2>`],
-    [/<(td-karma|tdk)>.*<\/(td-karma|tdk)>/g, `<$1>${parsedData.karma}</$2>`],
-    [/<(td-total-tasks-completed|tdttc)>.*<\/(td-total-tasks-completed|tdttc)>/g, `<$1>${parsedData.completed_count}</$2>`],
-    [/<(td-current-daily-streak-count|tdcdsc)>.*<\/(td-current-daily-streak-count|tdcdsc)>/g, `<$1>${parsedData.goals.current_daily_streak.count}</$2>`],
-    [/<(td-current-daily-streak-from|tdcdsf)>.*<\/(td-current-daily-streak-from|tdcdsf)>/g, `<$1>${parsedData.goals.current_daily_streak.start}</$2>`],
-    [/<(td-current-daily-streak-to|tdcdst)>.*<\/(td-current-daily-streak-to|tdcdst)>/g, `<$1>${parsedData.goals.current_daily_streak.end}</$2>`],
-    [/<(td-current-weekly-streak-count|tdcwsc)>.*<\/(td-current-weekly-streak-count|tdcwsc)>/g, `<$1>${parsedData.goals.current_weekly_streak.count}</$2>`],
-    [/<(td-current-weekly-streak-from|tdcwsf)>.*<\/(td-current-weekly-streak-from|tdcwsf)>/g, `<$1>${parsedData.goals.current_weekly_streak.start}</$2>`],
-    [/<(td-current-weekly-streak-to|tdcwst)>.*<\/(td-current-weekly-streak-to|tdcwst)>/g, `<$1>${parsedData.goals.current_weekly_streak.end}</$2>`]
+    [/<(td-karma-level|tdkl)>.*<\/(td-karma-level|tdkl)>/g, `<$1>${parsedData.karma_level}</$1>`],
+    [/<(td-karma|tdk)>.*<\/(td-karma|tdk)>/g, `<$1>${parsedData.karma}</$1>`],
+    [/<(td-total-tasks-completed|tdttc)>.*<\/(td-total-tasks-completed|tdttc)>/g, `<$1>${parsedData.completed_count}</$1>`],
+    [/<(td-current-daily-streak-count|tdcdsc)>.*<\/(td-current-daily-streak-count|tdcdsc)>/g, `<$1>${parsedData.goals.current_daily_streak.count}</$1>`],
+    [/<(td-current-daily-streak-from|tdcdsf)>.*<\/(td-current-daily-streak-from|tdcdsf)>/g, `<$1>${parsedData.goals.current_daily_streak.start}</$1>`],
+    [/<(td-current-daily-streak-to|tdcdst)>.*<\/(td-current-daily-streak-to|tdcdst)>/g, `<$1>${parsedData.goals.current_daily_streak.end}</$1>`],
+    [/<(td-current-weekly-streak-count|tdcwsc)>.*<\/(td-current-weekly-streak-count|tdcwsc)>/g, `<$1>${parsedData.goals.current_weekly_streak.count}</$1>`],
+    [/<(td-current-weekly-streak-from|tdcwsf)>.*<\/(td-current-weekly-streak-from|tdcwsf)>/g, `<$1>${parsedData.goals.current_weekly_streak.start}</$1>`],
+    [/<(td-current-weekly-streak-to|tdcwst)>.*<\/(td-current-weekly-streak-to|tdcwst)>/g, `<$1>${parsedData.goals.current_weekly_streak.end}</$1>`]
   ];
 
   let newContent = prevReadmeContent;

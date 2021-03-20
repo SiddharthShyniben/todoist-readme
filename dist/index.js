@@ -659,29 +659,20 @@ async function updateReadme(data) {
 
 const buildReadme = (prevReadmeContent, data) => {
   // Data needed: 
-  // Karma Level
-  // Karma Count
-  // Total tasks completed
-  // Current Daily streak
+  // Karma Level /
+  // Karma Count /
+  // Total tasks completed /
+  // Current Daily streak /
   // Current weekly streak
   // Max daily streak
   // Max weekly streak
   // Karma Activity
   // Karma Trend Graph
-  
-  const parsedData = {
-    lastKarmaUpdate: data.karma_last_update,
-    karmaTrend: data.karma_trend,
-    // days_items: not needed
-    tasksCompleted: data.completed_count,
-    karma: data.karma,
-    // week_items: not needed
-    goals: data.goals,
-    karmaActivity: data.karma_update_reasons
-  };
-  
-  let karma = data.karma;
-  parsedData.karmaLevel =
+
+  let parsedData = data;
+
+  let karma = parsedData.karma;
+  parsedData.karma_level =
     karma <= 499 ? "Beginner" :
       karma <= 2499 ? "Novice" :
         karma <= 4999 ? "Intermediate" :
@@ -689,13 +680,42 @@ const buildReadme = (prevReadmeContent, data) => {
             karma <= 9999 ? "Expert" :
               karma <= 19999 ? "Master" :
                 karma <= 49999 ? "Grandmaster" : "Enlightened";
-  
-  let newContent = prevReadmeContent
-    .replace(/<td-karma-level>.*<\/td-karma-level>/g, `<td-karma-level>${parsedData.karmaLevel}</td-karma-level>`)
-    .replace(/<td-karma>.*<\/td-karma>/g, `<td-karma>${parsedData.karma}</td-karma>`);
 
-  // Code...
-  
+  parsedData.goals.current_daily_streak.start = new Date(Date.parse(parsedData.goals.current_daily_streak.start)).toDateString();
+  parsedData.goals.current_daily_streak.end = new Date(Date.parse(parsedData.goals.current_daily_streak.end)).toDateString();
+  parsedData.goals.current_weekly_streak.start = new Date(Date.parse(parsedData.goals.current_weekly_streak.start)).toDateString();
+  parsedData.goals.current_weekly_streak.end = new Date(Date.parse(parsedData.goals.current_weekly_streak.end)).toDateString();
+
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+  days.forEach(day => {
+    parsedData.goals.current_daily_streak.start.replace(day.substring(0, 4), day);
+    parsedData.goals.current_daily_streak.end.replace(day.substring(0, 4), day);
+    parsedData.goals.current_weekly_streak.start.replace(day.substring(0, 4), day);
+    parsedData.goals.current_weekly_streak.end.replace(day.substring(0, 4), day);
+  });
+  months.forEach(month => {
+    parsedData.goals.current_daily_streak.start.replace(month.substring(0, 4), month);
+    parsedData.goals.current_daily_streak.end.replace(month.substring(0, 4), month);
+    parsedData.goals.current_weekly_streak.start.replace(month.substring(0, 4), month);
+    parsedData.goals.current_weekly_streak.end.replace(month.substring(0, 4), month);
+  });
+
+  let tags = [
+    [/<(td-karma-level|tdkl)>.*<\/(td-karma-level|tdkl)>/g, `<$1>${parsedData.karma_level}</$1>`],
+    [/<(td-karma|tdk)>.*<\/(td-karma|tdk)>/g, `<$1>${parsedData.karma}</$1>`],
+    [/<(td-total-tasks-completed|tdttc)>.*<\/(td-total-tasks-completed|tdttc)>/g, `<$1>${parsedData.completed_count}</$1>`],
+    [/<(td-current-daily-streak-count|tdcdsc)>.*<\/(td-current-daily-streak-count|tdcdsc)>/g, `<$1>${parsedData.goals.current_daily_streak.count}</$1>`],
+    [/<(td-current-daily-streak-from|tdcdsf)>.*<\/(td-current-daily-streak-from|tdcdsf)>/g, `<$1>${parsedData.goals.current_daily_streak.start}</$1>`],
+    [/<(td-current-daily-streak-to|tdcdst)>.*<\/(td-current-daily-streak-to|tdcdst)>/g, `<$1>${parsedData.goals.current_daily_streak.end}</$1>`],
+    [/<(td-current-weekly-streak-count|tdcwsc)>.*<\/(td-current-weekly-streak-count|tdcwsc)>/g, `<$1>${parsedData.goals.current_weekly_streak.count}</$1>`],
+    [/<(td-current-weekly-streak-from|tdcwsf)>.*<\/(td-current-weekly-streak-from|tdcwsf)>/g, `<$1>${parsedData.goals.current_weekly_streak.start}</$1>`],
+    [/<(td-current-weekly-streak-to|tdcwst)>.*<\/(td-current-weekly-streak-to|tdcwst)>/g, `<$1>${parsedData.goals.current_weekly_streak.end}</$1>`]
+  ];
+
+  let newContent = prevReadmeContent;
+  tags.forEach(tag => newContent.replace(tag[0], tag[1]));
   return newContent;
 };
 
