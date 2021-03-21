@@ -622,7 +622,8 @@ module.exports = require("os");
 
 const core = __webpack_require__(470);
 const axios = __webpack_require__(53);
-// const Humanize = require("humanize-plus");
+const Humanize = __webpack_require__(481);
+const dayjs = __webpack_require__(629);
 const fs = __webpack_require__(747);
 const exec = __webpack_require__(898);
 const TODOIST_API_KEY = core.getInput("TODOIST_API_KEY");
@@ -663,9 +664,9 @@ const buildReadme = (prevReadmeContent, data) => {
   // Karma Count /
   // Total tasks completed /
   // Current Daily streak /
-  // Current weekly streak
-  // Max daily streak
-  // Max weekly streak
+  // Current weekly streak /
+  // Max daily streak /
+  // Max weekly streak /
   // Karma Activity
   // Karma Trend Graph
 
@@ -681,49 +682,35 @@ const buildReadme = (prevReadmeContent, data) => {
               karma <= 19999 ? "Master" :
                 karma <= 49999 ? "Grandmaster" : "Enlightened";
 
-  parsedData.goals.current_daily_streak.start = new Date(Date.parse(parsedData.goals.current_daily_streak.start)).toDateString();
-  parsedData.goals.current_daily_streak.end = new Date(Date.parse(parsedData.goals.current_daily_streak.end)).toDateString();
-  parsedData.goals.current_weekly_streak.start = new Date(Date.parse(parsedData.goals.current_weekly_streak.start)).toDateString();
-  parsedData.goals.current_weekly_streak.end = new Date(Date.parse(parsedData.goals.current_weekly_streak.end)).toDateString();
-
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-  days.forEach(day => {
-    parsedData.goals.current_daily_streak.start.replace(day.substring(0, 4), day);
-    parsedData.goals.current_daily_streak.end.replace(day.substring(0, 4), day);
-    parsedData.goals.current_weekly_streak.start.replace(day.substring(0, 4), day);
-    parsedData.goals.current_weekly_streak.end.replace(day.substring(0, 4), day);
-  });
-  months.forEach(month => {
-    parsedData.goals.current_daily_streak.start.replace(month.substring(0, 4), month);
-    parsedData.goals.current_daily_streak.end.replace(month.substring(0, 4), month);
-    parsedData.goals.current_weekly_streak.start.replace(month.substring(0, 4), month);
-    parsedData.goals.current_weekly_streak.end.replace(month.substring(0, 4), month);
-  });
-
-  let tags = [
-    // [/<td-kl>.*<\/td-kl>/g, `<td-kl>${parsedData.karma_level}</td-kl>`],
-    // [/<td-k>.*<\/td-k>/g, `<td-k>${parsedData.karma}</td-k>`],
-    [/<td-ttc>.*<\/td-ttc>/g, `<td-ttc>${parsedData.completed_count}</td-ttc>`],
-    [/<td-cdsc>.*<\/td-cdsc>/g, `<td-cdsc>${parsedData.goals.current_daily_streak.count}</td-cdsc>`],
-    [/<td-cdsf>.*<\/td-cdsf>/g, `<td-cdsf>${parsedData.goals.current_daily_streak.start}</td-cdsf>`],
-    [/<td-cdst>.*<\/td-cdst>/g, `<td-cdst>${parsedData.goals.current_daily_streak.end}</td-cdst>`],
-    [/<td-cwsc>.*<\/td-cwsc>/g, `<td-cwsc>${parsedData.goals.current_weekly_streak.count}</td-cwsc>`],
-    [/<td-cwsf>.*<\/td-cwsf>/g, `<td-cwsf>${parsedData.goals.current_weekly_streak.start}</td-cwsf>`],
-    [/<td-cwst>.*<\/td-cwst>/g, `<td-cwst>${parsedData.goals.current_weekly_streak.end}</td-cwst>`]
-  ];
+  const dateForm = "dddd MMMM D YYYY";
+  parsedData.goals.current_daily_streak.start = dayjs(parsedData.goals.current_daily_streak.start).format(dateForm);
+  parsedData.goals.current_daily_streak.end = dayjs(parsedData.goals.current_daily_streak.end).format(dateForm);
+  parsedData.goals.current_weekly_streak.start = dayjs(parsedData.goals.current_weekly_streak.start).format(dateForm);
+  parsedData.goals.current_weekly_streak.end = dayjs(parsedData.goals.current_weekly_streak.end).format(dateForm);
+  parsedData.goals.max_daily_streak.start = dayjs(parsedData.goals.max_daily_streak.start).format(dateForm);
+  parsedData.goals.max_daily_streak.end = dayjs(parsedData.goals.max_daily_streak.end).format(dateForm);
+  parsedData.goals.max_weekly_streak.start = dayjs(parsedData.goals.max_weekly_streak.start).format(dateForm);
+  parsedData.goals.max_weekly_streak.end = dayjs(parsedData.goals.max_weekly_streak.end).format(dateForm);
+  
+  let ka = parsedData.karma_update_reasons;
 
   let newContent = prevReadmeContent
     .replace(/<td-kl>.*<\/td-kl>/g, `<td-kl>${parsedData.karma_level}</td-kl>`)
-    .replace(/<td-k>.*<\/td-k>/g, `<td-k>${parsedData.karma}</td-k>`)
+    .replace(/<td-k>.*<\/td-k>/g, `<td-k>${Humanize.formatNumber(parsedData.karma)}</td-k>`)
+    .replace(/<td-kc>.*<\/td-kc>/g, `<td-kc>${Humanize.compactInteger(~~parsedData.karma)}</td-kc>`)
     .replace(/<td-ttc>.*<\/td-ttc>/g, `<td-ttc>${parsedData.completed_count}</td-ttc>`)
-    .replace(/<td-cdsc>.*<\/td-cdsc>/g, `<td-cdsc>${parsedData.goals.current_daily_streak.count}</td-cdsc>`)
+    .replace(/<td-cdsc>.*<\/td-cdsc>/g, `<td-cdsc>${Humanize.formatNumber(parsedData.goals.current_daily_streak.count)}</td-cdsc>`)
     .replace(/<td-cdsf>.*<\/td-cdsf>/g, `<td-cdsf>${parsedData.goals.current_daily_streak.start}</td-cdsf>`)
     .replace(/<td-cdst>.*<\/td-cdst>/g, `<td-cdst>${parsedData.goals.current_daily_streak.end}</td-cdst>`)
-    .replace(/<td-cwsc>.*<\/td-cwsc>/g, `<td-cwsc>${parsedData.goals.current_weekly_streak.count}</td-cwsc>`)
+    .replace(/<td-cwsc>.*<\/td-cwsc>/g, `<td-cwsc>${Humanize.formatNumber(parsedData.goals.current_weekly_streak.count)}</td-cwsc>`)
     .replace(/<td-cwsf>.*<\/td-cwsf>/g, `<td-cwsf>${parsedData.goals.current_weekly_streak.start}</td-cwsf>`)
-    .replace(/<td-cwst>.*<\/td-cwst>/g, `<td-cwst>${parsedData.goals.current_weekly_streak.end}</td-cwst>`);
+    .replace(/<td-cwst>.*<\/td-cwst>/g, `<td-cwst>${parsedData.goals.current_weekly_streak.end}</td-cwst>`)
+    .replace(/<td-mdsc>.*<\/td-mdsc>/g, `<td-mdsc>${Humanize.formatNumber(parsedData.goals.max_daily_streak.count)}</td-mdsc>`)
+    .replace(/<td-mdsf>.*<\/td-mdsf>/g, `<td-mdsf>${parsedData.goals.max_daily_streak.start}</td-mdsf>`)
+    .replace(/<td-mdst>.*<\/td-mdst>/g, `<td-mdst>${parsedData.goals.max_daily_streak.end}</td-mdst>`)
+    .replace(/<td-mwsc>.*<\/td-mwsc>/g, `<td-mwsc>${Humanize.formatNumber(parsedData.goals.max_weekly_streak.count)}</td-mwsc>`)
+    .replace(/<td-mwsf>.*<\/td-mwsf>/g, `<td-mwsf>${parsedData.goals.max_weekly_streak.start}</td-mwsf>`)
+    .replace(/<td-mwst>.*<\/td-mwst>/g, `<td-mwst>${parsedData.goals.max_weekly_streak.end}</td-mwst>`);
   return newContent;
 };
 
@@ -1792,6 +1779,546 @@ function getState(name) {
 }
 exports.getState = getState;
 //# sourceMappingURL=core.js.map
+
+/***/ }),
+
+/***/ 481:
+/***/ (function(module, exports) {
+
+"use strict";
+/* humanize.js - v1.8.2 */
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+/**
+ * Copyright 2013-2016 HubSpotDev
+ * MIT Licensed
+ *
+ * @module humanize.js
+ */
+
+(function (root, factory) {
+  if (( false ? undefined : _typeof(exports)) === 'object') {
+    module.exports = factory();
+  } else if (typeof define === 'function' && define.amd) {
+    define([], function () {
+      return root.Humanize = factory();
+    });
+  } else {
+    root.Humanize = factory();
+  }
+})(this, function () {
+  //------------------------------------------------------------------------------
+  // Constants
+  //------------------------------------------------------------------------------
+
+  var TIME_FORMATS = [{
+    name: 'second',
+    value: 1e3
+  }, {
+    name: 'minute',
+    value: 6e4
+  }, {
+    name: 'hour',
+    value: 36e5
+  }, {
+    name: 'day',
+    value: 864e5
+  }, {
+    name: 'week',
+    value: 6048e5
+  }];
+
+  var LABELS_FOR_POWERS_OF_KILO = {
+    P: Math.pow(2, 50),
+    T: Math.pow(2, 40),
+    G: Math.pow(2, 30),
+    M: Math.pow(2, 20)
+  };
+
+  //------------------------------------------------------------------------------
+  // Helpers
+  //------------------------------------------------------------------------------
+
+  var exists = function exists(maybe) {
+    return typeof maybe !== 'undefined' && maybe !== null;
+  };
+
+  var isNaN = function isNaN(value) {
+    return value !== value;
+  }; // eslint-disable-line
+
+  var isFiniteNumber = function isFiniteNumber(value) {
+    return isFinite(value) && !isNaN(parseFloat(value));
+  };
+
+  var isArray = function isArray(value) {
+    var type = Object.prototype.toString.call(value);
+    return type === '[object Array]';
+  };
+
+  //------------------------------------------------------------------------------
+  // Humanize
+  //------------------------------------------------------------------------------
+
+  var Humanize = {
+
+    // Converts a large integer to a friendly text representation.
+
+    intword: function intword(number, charWidth) {
+      var decimals = arguments.length <= 2 || arguments[2] === undefined ? 2 : arguments[2];
+
+      /*
+      * This method is deprecated. Please use compactInteger instead.
+      * intword will be going away in the next major version.
+      */
+      return Humanize.compactInteger(number, decimals);
+    },
+
+
+    // Converts an integer into its most compact representation
+    compactInteger: function compactInteger(input) {
+      var decimals = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
+      decimals = Math.max(decimals, 0);
+      var number = parseInt(input, 10);
+      var signString = number < 0 ? '-' : '';
+      var unsignedNumber = Math.abs(number);
+      var unsignedNumberString = String(unsignedNumber);
+      var numberLength = unsignedNumberString.length;
+      var numberLengths = [13, 10, 7, 4];
+      var bigNumPrefixes = ['T', 'B', 'M', 'k'];
+
+      // small numbers
+      if (unsignedNumber < 1000) {
+        return '' + signString + unsignedNumberString;
+      }
+
+      // really big numbers
+      if (numberLength > numberLengths[0] + 3) {
+        return number.toExponential(decimals).replace('e+', 'x10^');
+      }
+
+      // 999 < unsignedNumber < 999,999,999,999,999
+      var length = void 0;
+      for (var i = 0; i < numberLengths.length; i++) {
+        var _length = numberLengths[i];
+        if (numberLength >= _length) {
+          length = _length;
+          break;
+        }
+      }
+
+      var decimalIndex = numberLength - length + 1;
+      var unsignedNumberCharacterArray = unsignedNumberString.split('');
+
+      var wholePartArray = unsignedNumberCharacterArray.slice(0, decimalIndex);
+      var decimalPartArray = unsignedNumberCharacterArray.slice(decimalIndex, decimalIndex + decimals + 1);
+
+      var wholePart = wholePartArray.join('');
+
+      // pad decimalPart if necessary
+      var decimalPart = decimalPartArray.join('');
+      if (decimalPart.length < decimals) {
+        decimalPart += '' + Array(decimals - decimalPart.length + 1).join('0');
+      }
+
+      var output = void 0;
+      if (decimals === 0) {
+        output = '' + signString + wholePart + bigNumPrefixes[numberLengths.indexOf(length)];
+      } else {
+        var outputNumber = Number(wholePart + '.' + decimalPart).toFixed(decimals);
+        output = '' + signString + outputNumber + bigNumPrefixes[numberLengths.indexOf(length)];
+      }
+
+      return output;
+    },
+
+
+    // Converts an integer to a string containing commas every three digits.
+    intComma: function intComma(number) {
+      var decimals = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
+      return Humanize.formatNumber(number, decimals);
+    },
+    intcomma: function intcomma() {
+      return Humanize.intComma.apply(Humanize, arguments);
+    },
+
+
+    // Formats the value like a 'human-readable' file size (i.e. '13 KB', '4.1 MB', '102 bytes', etc).
+    fileSize: function fileSize(filesize) {
+      var precision = arguments.length <= 1 || arguments[1] === undefined ? 2 : arguments[1];
+
+      for (var label in LABELS_FOR_POWERS_OF_KILO) {
+        if (LABELS_FOR_POWERS_OF_KILO.hasOwnProperty(label)) {
+          var minnum = LABELS_FOR_POWERS_OF_KILO[label];
+          if (filesize >= minnum) {
+            return Humanize.formatNumber(filesize / minnum, precision, '') + ' ' + label + 'B';
+          }
+        }
+      }
+      if (filesize >= 1024) {
+        return Humanize.formatNumber(filesize / 1024, 0) + ' KB';
+      }
+
+      return Humanize.formatNumber(filesize, 0) + Humanize.pluralize(filesize, ' byte');
+    },
+    filesize: function filesize() {
+      return Humanize.fileSize.apply(Humanize, arguments);
+    },
+
+
+    // Formats a number to a human-readable string.
+    // Localize by overriding the precision, thousand and decimal arguments.
+    formatNumber: function formatNumber(number) {
+      var precision = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var thousand = arguments.length <= 2 || arguments[2] === undefined ? ',' : arguments[2];
+      var decimal = arguments.length <= 3 || arguments[3] === undefined ? '.' : arguments[3];
+
+      // Create some private utility functions to make the computational
+      // code that follows much easier to read.
+      var firstComma = function firstComma(_number, _thousand, _position) {
+        return _position ? _number.substr(0, _position) + _thousand : '';
+      };
+
+      var commas = function commas(_number, _thousand, _position) {
+        return _number.substr(_position).replace(/(\d{3})(?=\d)/g, '$1' + _thousand);
+      };
+
+      var decimals = function decimals(_number, _decimal, usePrecision) {
+        return usePrecision ? _decimal + Humanize.toFixed(Math.abs(_number), usePrecision).split('.')[1] : '';
+      };
+
+      var usePrecision = Humanize.normalizePrecision(precision);
+
+      // Do some calc
+      var negative = number < 0 && '-' || '';
+      var base = String(parseInt(Humanize.toFixed(Math.abs(number || 0), usePrecision), 10));
+      var mod = base.length > 3 ? base.length % 3 : 0;
+
+      // Format the number
+      return negative + firstComma(base, thousand, mod) + commas(base, thousand, mod) + decimals(number, decimal, usePrecision);
+    },
+
+
+    // Fixes binary rounding issues (eg. (0.615).toFixed(2) === '0.61')
+    toFixed: function toFixed(value, precision) {
+      precision = exists(precision) ? precision : Humanize.normalizePrecision(precision, 0);
+      var power = Math.pow(10, precision);
+
+      // Multiply up by precision, round accurately, then divide and use native toFixed()
+      return (Math.round(value * power) / power).toFixed(precision);
+    },
+
+
+    // Ensures precision value is a positive integer
+    normalizePrecision: function normalizePrecision(value, base) {
+      value = Math.round(Math.abs(value));
+      return isNaN(value) ? base : value;
+    },
+
+
+    // Converts an integer to its ordinal as a string.
+    ordinal: function ordinal(value) {
+      var number = parseInt(value, 10);
+
+      if (number === 0) {
+        return value;
+      }
+
+      var specialCase = number % 100;
+      if ([11, 12, 13].indexOf(specialCase) >= 0) {
+        return number + 'th';
+      }
+
+      var leastSignificant = number % 10;
+
+      var end = void 0;
+      switch (leastSignificant) {
+        case 1:
+          end = 'st';
+          break;
+        case 2:
+          end = 'nd';
+          break;
+        case 3:
+          end = 'rd';
+          break;
+        default:
+          end = 'th';
+      }
+
+      return '' + number + end;
+    },
+
+
+    // Interprets numbers as occurences. Also accepts an optional array/map of overrides.
+    times: function times(value) {
+      var overrides = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (isFiniteNumber(value) && value >= 0) {
+        var number = parseFloat(value);
+        var smallTimes = ['never', 'once', 'twice'];
+        if (exists(overrides[number])) {
+          return String(overrides[number]);
+        }
+
+        var numberString = exists(smallTimes[number]) && smallTimes[number].toString();
+        return numberString || number.toString() + ' times';
+      }
+      return null;
+    },
+
+
+    // Returns the plural version of a given word if the value is not 1. The default suffix is 's'.
+    pluralize: function pluralize(number, singular, plural) {
+      if (!(exists(number) && exists(singular))) {
+        return null;
+      }
+
+      plural = exists(plural) ? plural : singular + 's';
+
+      return parseInt(number, 10) === 1 ? singular : plural;
+    },
+
+
+    // Truncates a string if it is longer than the specified number of characters (inclusive).
+    // Truncated strings will end with a translatable ellipsis sequence ("…").
+    truncate: function truncate(str) {
+      var length = arguments.length <= 1 || arguments[1] === undefined ? 100 : arguments[1];
+      var ending = arguments.length <= 2 || arguments[2] === undefined ? '...' : arguments[2];
+
+      if (str.length > length) {
+        return str.substring(0, length - ending.length) + ending;
+      }
+      return str;
+    },
+
+
+    // Truncates a string after a certain number of words.
+    truncateWords: function truncateWords(string, length) {
+      var array = string.split(' ');
+      var result = '';
+      var i = 0;
+
+      while (i < length) {
+        if (exists(array[i])) {
+          result += array[i] + ' ';
+        }
+        i++;
+      }
+
+      if (array.length > length) {
+        return result + '...';
+      }
+
+      return null;
+    },
+    truncatewords: function truncatewords() {
+      return Humanize.truncateWords.apply(Humanize, arguments);
+    },
+
+
+    // Truncates a number to an upper bound.
+    boundedNumber: function boundedNumber(num) {
+      var bound = arguments.length <= 1 || arguments[1] === undefined ? 100 : arguments[1];
+      var ending = arguments.length <= 2 || arguments[2] === undefined ? '+' : arguments[2];
+
+      var result = void 0;
+
+      if (isFiniteNumber(num) && isFiniteNumber(bound)) {
+        if (num > bound) {
+          result = bound + ending;
+        }
+      }
+
+      return (result || num).toString();
+    },
+    truncatenumber: function truncatenumber() {
+      return Humanize.boundedNumber.apply(Humanize, arguments);
+    },
+
+
+    // Converts a list of items to a human readable string with an optional limit.
+    oxford: function oxford(items, limit, limitStr) {
+      var numItems = items.length;
+
+      var limitIndex = void 0;
+      if (numItems < 2) {
+        return String(items);
+      } else if (numItems === 2) {
+        return items.join(' and ');
+      } else if (exists(limit) && numItems > limit) {
+        var extra = numItems - limit;
+        limitIndex = limit;
+        limitStr = exists(limitStr) ? limitStr : ', and ' + extra + ' ' + Humanize.pluralize(extra, 'other');
+      } else {
+        limitIndex = -1;
+        limitStr = ', and ' + items[numItems - 1];
+      }
+
+      return items.slice(0, limitIndex).join(', ') + limitStr;
+    },
+
+
+    // Converts an object to a definition-like string
+    dictionary: function dictionary(object) {
+      var joiner = arguments.length <= 1 || arguments[1] === undefined ? ' is ' : arguments[1];
+      var separator = arguments.length <= 2 || arguments[2] === undefined ? ', ' : arguments[2];
+
+      var result = '';
+
+      if (exists(object) && (typeof object === 'undefined' ? 'undefined' : _typeof(object)) === 'object' && !isArray(object)) {
+        var defs = [];
+        for (var key in object) {
+          if (object.hasOwnProperty(key)) {
+            var val = object[key];
+            defs.push('' + key + joiner + val);
+          }
+        }
+
+        return defs.join(separator);
+      }
+
+      return result;
+    },
+
+
+    // Describes how many times an item appears in a list
+    frequency: function frequency(list, verb) {
+      if (!isArray(list)) {
+        return null;
+      }
+
+      var len = list.length;
+      var times = Humanize.times(len);
+
+      if (len === 0) {
+        return times + ' ' + verb;
+      }
+
+      return verb + ' ' + times;
+    },
+    pace: function pace(value, intervalMs) {
+      var unit = arguments.length <= 2 || arguments[2] === undefined ? 'time' : arguments[2];
+
+      if (value === 0 || intervalMs === 0) {
+        // Needs a better string than this...
+        return 'No ' + Humanize.pluralize(0, unit);
+      }
+
+      // Expose these as overridables?
+      var prefix = 'Approximately';
+      var timeUnit = void 0;
+      var relativePace = void 0;
+
+      var rate = value / intervalMs;
+      for (var i = 0; i < TIME_FORMATS.length; ++i) {
+        // assumes sorted list
+        var f = TIME_FORMATS[i];
+        relativePace = rate * f.value;
+        if (relativePace > 1) {
+          timeUnit = f.name;
+          break;
+        }
+      }
+
+      // Use the last time unit if there is nothing smaller
+      if (!timeUnit) {
+        prefix = 'Less than';
+        relativePace = 1;
+        timeUnit = TIME_FORMATS[TIME_FORMATS.length - 1].name;
+      }
+
+      var roundedPace = Math.round(relativePace);
+      unit = Humanize.pluralize(roundedPace, unit);
+
+      return prefix + ' ' + roundedPace + ' ' + unit + ' per ' + timeUnit;
+    },
+
+
+    // Converts newlines to <br/> tags
+    nl2br: function nl2br(string) {
+      var replacement = arguments.length <= 1 || arguments[1] === undefined ? '<br/>' : arguments[1];
+
+      return string.replace(/\n/g, replacement);
+    },
+
+
+    // Converts <br/> tags to newlines
+    br2nl: function br2nl(string) {
+      var replacement = arguments.length <= 1 || arguments[1] === undefined ? '\r\n' : arguments[1];
+
+      return string.replace(/\<br\s*\/?\>/g, replacement);
+    },
+
+
+    // Capitalizes first letter in a string
+    capitalize: function capitalize(string) {
+      var downCaseTail = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+      return '' + string.charAt(0).toUpperCase() + (downCaseTail ? string.slice(1).toLowerCase() : string.slice(1));
+    },
+
+
+    // Capitalizes the first letter of each word in a string
+    capitalizeAll: function capitalizeAll(string) {
+      return string.replace(/(?:^|\s)\S/g, function (a) {
+        return a.toUpperCase();
+      });
+    },
+
+
+    // Titlecase words in a string.
+    titleCase: function titleCase(string) {
+      var smallWords = /\b(a|an|and|at|but|by|de|en|for|if|in|of|on|or|the|to|via|vs?\.?)\b/i;
+      var internalCaps = /\S+[A-Z]+\S*/;
+      var splitOnWhiteSpaceRegex = /\s+/;
+      var splitOnHyphensRegex = /-/;
+
+      var _doTitleCase = void 0;
+      _doTitleCase = function doTitleCase(_string) {
+        var hyphenated = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+        var firstOrLast = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+
+        var titleCasedArray = [];
+        var stringArray = _string.split(hyphenated ? splitOnHyphensRegex : splitOnWhiteSpaceRegex);
+
+        for (var index = 0; index < stringArray.length; ++index) {
+          var word = stringArray[index];
+          if (word.indexOf('-') !== -1) {
+            titleCasedArray.push(_doTitleCase(word, true, index === 0 || index === stringArray.length - 1));
+            continue;
+          }
+
+          if (firstOrLast && (index === 0 || index === stringArray.length - 1)) {
+            titleCasedArray.push(internalCaps.test(word) ? word : Humanize.capitalize(word));
+            continue;
+          }
+
+          if (internalCaps.test(word)) {
+            titleCasedArray.push(word);
+          } else if (smallWords.test(word)) {
+            titleCasedArray.push(word.toLowerCase());
+          } else {
+            titleCasedArray.push(Humanize.capitalize(word));
+          }
+        }
+
+        return titleCasedArray.join(hyphenated ? '-' : ' ');
+      };
+
+      return _doTitleCase(string);
+    },
+    titlecase: function titlecase() {
+      return Humanize.titleCase.apply(Humanize, arguments);
+    }
+  };
+
+  return Humanize;
+});
 
 /***/ }),
 
@@ -3076,6 +3603,14 @@ module.exports = (flag, argv) => {
 	const terminatorPos = argv.indexOf('--');
 	return pos !== -1 && (terminatorPos === -1 ? true : pos < terminatorPos);
 };
+
+
+/***/ }),
+
+/***/ 629:
+/***/ (function(module) {
+
+!function(t,e){ true?module.exports=e():undefined}(this,function(){"use strict";var t="millisecond",e="second",n="minute",r="hour",i="day",s="week",u="month",a="quarter",o="year",f="date",h=/^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d+)?$/,c=/\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,d={name:"en",weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_")},$=function(t,e,n){var r=String(t);return!r||r.length>=e?t:""+Array(e+1-r.length).join(n)+t},l={s:$,z:function(t){var e=-t.utcOffset(),n=Math.abs(e),r=Math.floor(n/60),i=n%60;return(e<=0?"+":"-")+$(r,2,"0")+":"+$(i,2,"0")},m:function t(e,n){if(e.date()<n.date())return-t(n,e);var r=12*(n.year()-e.year())+(n.month()-e.month()),i=e.clone().add(r,u),s=n-i<0,a=e.clone().add(r+(s?-1:1),u);return+(-(r+(n-i)/(s?i-a:a-i))||0)},a:function(t){return t<0?Math.ceil(t)||0:Math.floor(t)},p:function(h){return{M:u,y:o,w:s,d:i,D:f,h:r,m:n,s:e,ms:t,Q:a}[h]||String(h||"").toLowerCase().replace(/s$/,"")},u:function(t){return void 0===t}},y="en",M={};M[y]=d;var m=function(t){return t instanceof S},D=function(t,e,n){var r;if(!t)return y;if("string"==typeof t)M[t]&&(r=t),e&&(M[t]=e,r=t);else{var i=t.name;M[i]=t,r=i}return!n&&r&&(y=r),r||!n&&y},v=function(t,e){if(m(t))return t.clone();var n="object"==typeof e?e:{};return n.date=t,n.args=arguments,new S(n)},g=l;g.l=D,g.i=m,g.w=function(t,e){return v(t,{locale:e.$L,utc:e.$u,x:e.$x,$offset:e.$offset})};var S=function(){function d(t){this.$L=D(t.locale,null,!0),this.parse(t)}var $=d.prototype;return $.parse=function(t){this.$d=function(t){var e=t.date,n=t.utc;if(null===e)return new Date(NaN);if(g.u(e))return new Date;if(e instanceof Date)return new Date(e);if("string"==typeof e&&!/Z$/i.test(e)){var r=e.match(h);if(r){var i=r[2]-1||0,s=(r[7]||"0").substring(0,3);return n?new Date(Date.UTC(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)):new Date(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)}}return new Date(e)}(t),this.$x=t.x||{},this.init()},$.init=function(){var t=this.$d;this.$y=t.getFullYear(),this.$M=t.getMonth(),this.$D=t.getDate(),this.$W=t.getDay(),this.$H=t.getHours(),this.$m=t.getMinutes(),this.$s=t.getSeconds(),this.$ms=t.getMilliseconds()},$.$utils=function(){return g},$.isValid=function(){return!("Invalid Date"===this.$d.toString())},$.isSame=function(t,e){var n=v(t);return this.startOf(e)<=n&&n<=this.endOf(e)},$.isAfter=function(t,e){return v(t)<this.startOf(e)},$.isBefore=function(t,e){return this.endOf(e)<v(t)},$.$g=function(t,e,n){return g.u(t)?this[e]:this.set(n,t)},$.unix=function(){return Math.floor(this.valueOf()/1e3)},$.valueOf=function(){return this.$d.getTime()},$.startOf=function(t,a){var h=this,c=!!g.u(a)||a,d=g.p(t),$=function(t,e){var n=g.w(h.$u?Date.UTC(h.$y,e,t):new Date(h.$y,e,t),h);return c?n:n.endOf(i)},l=function(t,e){return g.w(h.toDate()[t].apply(h.toDate("s"),(c?[0,0,0,0]:[23,59,59,999]).slice(e)),h)},y=this.$W,M=this.$M,m=this.$D,D="set"+(this.$u?"UTC":"");switch(d){case o:return c?$(1,0):$(31,11);case u:return c?$(1,M):$(0,M+1);case s:var v=this.$locale().weekStart||0,S=(y<v?y+7:y)-v;return $(c?m-S:m+(6-S),M);case i:case f:return l(D+"Hours",0);case r:return l(D+"Minutes",1);case n:return l(D+"Seconds",2);case e:return l(D+"Milliseconds",3);default:return this.clone()}},$.endOf=function(t){return this.startOf(t,!1)},$.$set=function(s,a){var h,c=g.p(s),d="set"+(this.$u?"UTC":""),$=(h={},h[i]=d+"Date",h[f]=d+"Date",h[u]=d+"Month",h[o]=d+"FullYear",h[r]=d+"Hours",h[n]=d+"Minutes",h[e]=d+"Seconds",h[t]=d+"Milliseconds",h)[c],l=c===i?this.$D+(a-this.$W):a;if(c===u||c===o){var y=this.clone().set(f,1);y.$d[$](l),y.init(),this.$d=y.set(f,Math.min(this.$D,y.daysInMonth())).$d}else $&&this.$d[$](l);return this.init(),this},$.set=function(t,e){return this.clone().$set(t,e)},$.get=function(t){return this[g.p(t)]()},$.add=function(t,a){var f,h=this;t=Number(t);var c=g.p(a),d=function(e){var n=v(h);return g.w(n.date(n.date()+Math.round(e*t)),h)};if(c===u)return this.set(u,this.$M+t);if(c===o)return this.set(o,this.$y+t);if(c===i)return d(1);if(c===s)return d(7);var $=(f={},f[n]=6e4,f[r]=36e5,f[e]=1e3,f)[c]||1,l=this.$d.getTime()+t*$;return g.w(l,this)},$.subtract=function(t,e){return this.add(-1*t,e)},$.format=function(t){var e=this;if(!this.isValid())return"Invalid Date";var n=t||"YYYY-MM-DDTHH:mm:ssZ",r=g.z(this),i=this.$locale(),s=this.$H,u=this.$m,a=this.$M,o=i.weekdays,f=i.months,h=function(t,r,i,s){return t&&(t[r]||t(e,n))||i[r].substr(0,s)},d=function(t){return g.s(s%12||12,t,"0")},$=i.meridiem||function(t,e,n){var r=t<12?"AM":"PM";return n?r.toLowerCase():r},l={YY:String(this.$y).slice(-2),YYYY:this.$y,M:a+1,MM:g.s(a+1,2,"0"),MMM:h(i.monthsShort,a,f,3),MMMM:h(f,a),D:this.$D,DD:g.s(this.$D,2,"0"),d:String(this.$W),dd:h(i.weekdaysMin,this.$W,o,2),ddd:h(i.weekdaysShort,this.$W,o,3),dddd:o[this.$W],H:String(s),HH:g.s(s,2,"0"),h:d(1),hh:d(2),a:$(s,u,!0),A:$(s,u,!1),m:String(u),mm:g.s(u,2,"0"),s:String(this.$s),ss:g.s(this.$s,2,"0"),SSS:g.s(this.$ms,3,"0"),Z:r};return n.replace(c,function(t,e){return e||l[t]||r.replace(":","")})},$.utcOffset=function(){return 15*-Math.round(this.$d.getTimezoneOffset()/15)},$.diff=function(t,f,h){var c,d=g.p(f),$=v(t),l=6e4*($.utcOffset()-this.utcOffset()),y=this-$,M=g.m(this,$);return M=(c={},c[o]=M/12,c[u]=M,c[a]=M/3,c[s]=(y-l)/6048e5,c[i]=(y-l)/864e5,c[r]=y/36e5,c[n]=y/6e4,c[e]=y/1e3,c)[d]||y,h?M:g.a(M)},$.daysInMonth=function(){return this.endOf(u).$D},$.$locale=function(){return M[this.$L]},$.locale=function(t,e){if(!t)return this.$L;var n=this.clone(),r=D(t,e,!0);return r&&(n.$L=r),n},$.clone=function(){return g.w(this.$d,this)},$.toDate=function(){return new Date(this.valueOf())},$.toJSON=function(){return this.isValid()?this.toISOString():null},$.toISOString=function(){return this.$d.toISOString()},$.toString=function(){return this.$d.toUTCString()},d}(),p=S.prototype;return v.prototype=p,[["$ms",t],["$s",e],["$m",n],["$H",r],["$W",i],["$M",u],["$y",o],["$D",f]].forEach(function(t){p[t[1]]=function(e){return this.$g(e,t[0],t[1])}}),v.extend=function(t,e){return t.$i||(t(e,S,v),t.$i=!0),v},v.locale=D,v.isDayjs=m,v.unix=function(t){return v(1e3*t)},v.en=M[y],v.Ls=M,v.p={},v});
 
 
 /***/ }),

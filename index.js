@@ -1,6 +1,7 @@
 const core = require("@actions/core");
 const axios = require("axios");
-// const Humanize = require("humanize-plus");
+const Humanize = require("humanize-plus");
+const dayjs = require("dayjs");
 const fs = require("fs");
 const exec = require("./exec");
 const TODOIST_API_KEY = core.getInput("TODOIST_API_KEY");
@@ -41,9 +42,9 @@ const buildReadme = (prevReadmeContent, data) => {
   // Karma Count /
   // Total tasks completed /
   // Current Daily streak /
-  // Current weekly streak
-  // Max daily streak
-  // Max weekly streak
+  // Current weekly streak /
+  // Max daily streak /
+  // Max weekly streak /
   // Karma Activity
   // Karma Trend Graph
 
@@ -59,49 +60,35 @@ const buildReadme = (prevReadmeContent, data) => {
               karma <= 19999 ? "Master" :
                 karma <= 49999 ? "Grandmaster" : "Enlightened";
 
-  parsedData.goals.current_daily_streak.start = new Date(Date.parse(parsedData.goals.current_daily_streak.start)).toDateString();
-  parsedData.goals.current_daily_streak.end = new Date(Date.parse(parsedData.goals.current_daily_streak.end)).toDateString();
-  parsedData.goals.current_weekly_streak.start = new Date(Date.parse(parsedData.goals.current_weekly_streak.start)).toDateString();
-  parsedData.goals.current_weekly_streak.end = new Date(Date.parse(parsedData.goals.current_weekly_streak.end)).toDateString();
-
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-  days.forEach(day => {
-    parsedData.goals.current_daily_streak.start.replace(day.substring(0, 4), day);
-    parsedData.goals.current_daily_streak.end.replace(day.substring(0, 4), day);
-    parsedData.goals.current_weekly_streak.start.replace(day.substring(0, 4), day);
-    parsedData.goals.current_weekly_streak.end.replace(day.substring(0, 4), day);
-  });
-  months.forEach(month => {
-    parsedData.goals.current_daily_streak.start.replace(month.substring(0, 4), month);
-    parsedData.goals.current_daily_streak.end.replace(month.substring(0, 4), month);
-    parsedData.goals.current_weekly_streak.start.replace(month.substring(0, 4), month);
-    parsedData.goals.current_weekly_streak.end.replace(month.substring(0, 4), month);
-  });
-
-  let tags = [
-    // [/<td-kl>.*<\/td-kl>/g, `<td-kl>${parsedData.karma_level}</td-kl>`],
-    // [/<td-k>.*<\/td-k>/g, `<td-k>${parsedData.karma}</td-k>`],
-    [/<td-ttc>.*<\/td-ttc>/g, `<td-ttc>${parsedData.completed_count}</td-ttc>`],
-    [/<td-cdsc>.*<\/td-cdsc>/g, `<td-cdsc>${parsedData.goals.current_daily_streak.count}</td-cdsc>`],
-    [/<td-cdsf>.*<\/td-cdsf>/g, `<td-cdsf>${parsedData.goals.current_daily_streak.start}</td-cdsf>`],
-    [/<td-cdst>.*<\/td-cdst>/g, `<td-cdst>${parsedData.goals.current_daily_streak.end}</td-cdst>`],
-    [/<td-cwsc>.*<\/td-cwsc>/g, `<td-cwsc>${parsedData.goals.current_weekly_streak.count}</td-cwsc>`],
-    [/<td-cwsf>.*<\/td-cwsf>/g, `<td-cwsf>${parsedData.goals.current_weekly_streak.start}</td-cwsf>`],
-    [/<td-cwst>.*<\/td-cwst>/g, `<td-cwst>${parsedData.goals.current_weekly_streak.end}</td-cwst>`]
-  ];
+  const dateForm = "dddd MMMM D YYYY";
+  parsedData.goals.current_daily_streak.start = dayjs(parsedData.goals.current_daily_streak.start).format(dateForm);
+  parsedData.goals.current_daily_streak.end = dayjs(parsedData.goals.current_daily_streak.end).format(dateForm);
+  parsedData.goals.current_weekly_streak.start = dayjs(parsedData.goals.current_weekly_streak.start).format(dateForm);
+  parsedData.goals.current_weekly_streak.end = dayjs(parsedData.goals.current_weekly_streak.end).format(dateForm);
+  parsedData.goals.max_daily_streak.start = dayjs(parsedData.goals.max_daily_streak.start).format(dateForm);
+  parsedData.goals.max_daily_streak.end = dayjs(parsedData.goals.max_daily_streak.end).format(dateForm);
+  parsedData.goals.max_weekly_streak.start = dayjs(parsedData.goals.max_weekly_streak.start).format(dateForm);
+  parsedData.goals.max_weekly_streak.end = dayjs(parsedData.goals.max_weekly_streak.end).format(dateForm);
+  
+  let ka = parsedData.karma_update_reasons;
 
   let newContent = prevReadmeContent
     .replace(/<td-kl>.*<\/td-kl>/g, `<td-kl>${parsedData.karma_level}</td-kl>`)
-    .replace(/<td-k>.*<\/td-k>/g, `<td-k>${parsedData.karma}</td-k>`)
+    .replace(/<td-k>.*<\/td-k>/g, `<td-k>${Humanize.formatNumber(parsedData.karma)}</td-k>`)
+    .replace(/<td-kc>.*<\/td-kc>/g, `<td-kc>${Humanize.compactInteger(~~parsedData.karma)}</td-kc>`)
     .replace(/<td-ttc>.*<\/td-ttc>/g, `<td-ttc>${parsedData.completed_count}</td-ttc>`)
-    .replace(/<td-cdsc>.*<\/td-cdsc>/g, `<td-cdsc>${parsedData.goals.current_daily_streak.count}</td-cdsc>`)
+    .replace(/<td-cdsc>.*<\/td-cdsc>/g, `<td-cdsc>${Humanize.formatNumber(parsedData.goals.current_daily_streak.count)}</td-cdsc>`)
     .replace(/<td-cdsf>.*<\/td-cdsf>/g, `<td-cdsf>${parsedData.goals.current_daily_streak.start}</td-cdsf>`)
     .replace(/<td-cdst>.*<\/td-cdst>/g, `<td-cdst>${parsedData.goals.current_daily_streak.end}</td-cdst>`)
-    .replace(/<td-cwsc>.*<\/td-cwsc>/g, `<td-cwsc>${parsedData.goals.current_weekly_streak.count}</td-cwsc>`)
+    .replace(/<td-cwsc>.*<\/td-cwsc>/g, `<td-cwsc>${Humanize.formatNumber(parsedData.goals.current_weekly_streak.count)}</td-cwsc>`)
     .replace(/<td-cwsf>.*<\/td-cwsf>/g, `<td-cwsf>${parsedData.goals.current_weekly_streak.start}</td-cwsf>`)
-    .replace(/<td-cwst>.*<\/td-cwst>/g, `<td-cwst>${parsedData.goals.current_weekly_streak.end}</td-cwst>`);
+    .replace(/<td-cwst>.*<\/td-cwst>/g, `<td-cwst>${parsedData.goals.current_weekly_streak.end}</td-cwst>`)
+    .replace(/<td-mdsc>.*<\/td-mdsc>/g, `<td-mdsc>${Humanize.formatNumber(parsedData.goals.max_daily_streak.count)}</td-mdsc>`)
+    .replace(/<td-mdsf>.*<\/td-mdsf>/g, `<td-mdsf>${parsedData.goals.max_daily_streak.start}</td-mdsf>`)
+    .replace(/<td-mdst>.*<\/td-mdst>/g, `<td-mdst>${parsedData.goals.max_daily_streak.end}</td-mdst>`)
+    .replace(/<td-mwsc>.*<\/td-mwsc>/g, `<td-mwsc>${Humanize.formatNumber(parsedData.goals.max_weekly_streak.count)}</td-mwsc>`)
+    .replace(/<td-mwsf>.*<\/td-mwsf>/g, `<td-mwsf>${parsedData.goals.max_weekly_streak.start}</td-mwsf>`)
+    .replace(/<td-mwst>.*<\/td-mwst>/g, `<td-mwst>${parsedData.goals.max_weekly_streak.end}</td-mwst>`);
   return newContent;
 };
 
