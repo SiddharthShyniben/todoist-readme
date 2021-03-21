@@ -82,7 +82,6 @@ The tags will automagically get filled with the specified stats. <u>**_This give
 * `<td-cwsc>`: The number of weeks you have completed your weekly goal (known as a weekly streak)
 * `<td-cwsf>`: The day on which your current Todoist weekly streak has started
 * `<td-cwst>`: The day on which your current Todoist daily streak has ended (most of the time this will be this week or last week)
-<!-- Then... -->
 * `<td-mdsc>`: The length of your longest daily streak
 * `<td-mdsf>`: The day on which your longest Todoist daily streak has started
 * `<td-mdst>`: The day on which your longest Todoist daily streak has ended
