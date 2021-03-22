@@ -87,7 +87,8 @@ The tags will automagically get filled with the specified stats. <u>**_This give
 * `<td-mdst>`: The day on which your longest Todoist daily streak has ended
 * `<td-mwsc>`: The length of your longest weekly streak
 * `<td-mwsf>`: The day on which your longest Todoist weekly streak has started
-* `<td-mwst>`: The day on which your longest Todoist daily streak has ended (most of the time this will be this week or last week)
+* `<td-mwst>`: The day on which your longest Todoist daily streak has ended
+* `<td-ka>`: A list showing your Todoist Karma activity
 * _More coming soon..._
 
 

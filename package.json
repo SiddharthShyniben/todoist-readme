@@ -22,12 +22,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/abhisheknaiidu/todoist-readme.git"
+    "url": "git+https://github.com/SiddharthShyniben/todoist-readme.git"
   },
   "author": "Abhishek Naidu",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/abhisheknaiidu/todoist-readme/issues"
+    "url": "https://github.com/SiddharthShyniben/todoist-readme/issues"
   },
-  "homepage": "https://github.com/abhisheknaiidu/todoist-readme#readme"
+  "homepage": "https://github.com/SiddharthShyniben/todoist-readme#readme"
 }

@@ -2,10 +2,11 @@ const core = require("@actions/core");
 const axios = require("axios");
 const Humanize = require("humanize-plus");
 const dayjs = require("dayjs");
+const relativeTime = require('dayjs/plugin/relativeTime');
+dayjs.extend(relativeTime);
 const fs = require("fs");
 const exec = require("./exec");
 const TODOIST_API_KEY = core.getInput("TODOIST_API_KEY");
-const PREMIUM = core.getInput("PREMIUM");
 
 async function main() {
   const stats = await axios(`https://api.todoist.com/sync/v8.3/completed/get_stats?token=${TODOIST_API_KEY}`);
@@ -22,9 +23,7 @@ async function updateReadme(data) {
     if (newReadme !== readmeData) {
       core.info("Writing to " + README_FILE_PATH);
       fs.writeFileSync(README_FILE_PATH, newReadme);
-      if (!process.env.TEST_MODE) {
-        commitReadme();
-      }
+      if (!process.env.TEST_MODE) commitReadme();
     } else {
       core.info("No change detected, skipping");
       process.exit(0);
@@ -72,6 +71,49 @@ const buildReadme = (prevReadmeContent, data) => {
   
   let ka = parsedData.karma_update_reasons;
 
+  parsedData.activity = [];
+
+  ka.forEach(reason => {
+    const kaData = {};
+
+    kaData.plus = reason.positive_karma;
+    kaData.minus = reason.negative_karma;
+    kaData.current = reason.new_karma;
+    kaData.plusReasons = [];
+    kaData.minusReasons = [];
+    kaData.time = dayjs().to(dayjs(reason.time));
+
+    const updateReasons = {
+      1: "Addition of tasks.",
+      2: "Completion of tasks.",
+      3: "Usage of advanced features.",
+      4: "Usage of Todoist.",
+      5: "Signed up for Todoist Beta",
+      6: "Usage of Todoist support section",
+      7: "Signed up for Todoist Premium",
+      8: "Completion of Getting Started Guide task",
+      9: "Daily Goal reached.",
+      10: "Weekly Goal reached!",
+      50: "Tasks overdue for too long",
+      52: "Inactive for a long period of time"
+    };
+    
+    reason.positive_karma_reasons.forEach(plusReason => kaData.plusReasons.push(updateReasons[plusReason]));
+    reason.negative_karma_reasons.forEach(minusReason => kaData.minusReasons.push(updateReasons[minusReason]));
+
+    parsedData.activity.push(kaData);
+  });
+
+  parsedData.parsedActivity = [];
+  parsedData.activity.forEach(act => {
+    let template =
+      [`* ${act.time} <span style="color:green">+${act.plus}</span> <span style="color:red">-${act.minus}</span>`,
+       `  * Activity:`];
+    act.plusReasons.forEach(plusReason => template.push(`    * <span style="color:green">+</span> ${plusReason}`));
+    act.minusReasons.forEach(minusReason => template.push(`    * <span style="color:red">-</span> ${minusReason}`));
+    parsedData.parsedActivity.push(template.join("\n"));
+  });
+
   let newContent = prevReadmeContent
     .replace(/<td-kl>.*<\/td-kl>/g, `<td-kl>${parsedData.karma_level}</td-kl>`)
     .replace(/<td-k>.*<\/td-k>/g, `<td-k>${Humanize.formatNumber(parsedData.karma)}</td-k>`)
@@ -88,7 +130,7 @@ const buildReadme = (prevReadmeContent, data) => {
     .replace(/<td-mdst>.*<\/td-mdst>/g, `<td-mdst>${parsedData.goals.max_daily_streak.end}</td-mdst>`)
     .replace(/<td-mwsc>.*<\/td-mwsc>/g, `<td-mwsc>${Humanize.formatNumber(parsedData.goals.max_weekly_streak.count)}</td-mwsc>`)
     .replace(/<td-mwsf>.*<\/td-mwsf>/g, `<td-mwsf>${parsedData.goals.max_weekly_streak.start}</td-mwsf>`)
-    .replace(/<td-mwst>.*<\/td-mwst>/g, `<td-mwst>${parsedData.goals.max_weekly_streak.end}</td-mwst>`);
+    .replace(/<td-ka>.*<\/td-ka>/g, `<td-ka>${parsedData.parsedActivity.join("\n")}</td-ka>`);
   return newContent;
 };
 
