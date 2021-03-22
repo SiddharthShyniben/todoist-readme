@@ -130,7 +130,7 @@ const buildReadme = (prevReadmeContent, data) => {
     .replace(/<td-mdst>.*<\/td-mdst>/g, `<td-mdst>${parsedData.goals.max_daily_streak.end}</td-mdst>`)
     .replace(/<td-mwsc>.*<\/td-mwsc>/g, `<td-mwsc>${Humanize.formatNumber(parsedData.goals.max_weekly_streak.count)}</td-mwsc>`)
     .replace(/<td-mwsf>.*<\/td-mwsf>/g, `<td-mwsf>${parsedData.goals.max_weekly_streak.start}</td-mwsf>`)
-    .replace(/<td-ka>.*<\/td-ka>/g, `<td-ka>${parsedData.parsedActivity.join("\n")}</td-ka>`);
+    .replace(/<td-ka>.*<\/td-ka>/g, `<td-ka>\n${parsedData.parsedActivity.join("\n")}\n</td-ka>`);
   return newContent;
 };
 
