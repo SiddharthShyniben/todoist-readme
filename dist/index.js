@@ -789,12 +789,18 @@ const buildReadme = (prevReadmeContent, data) => {
   });
 
   parsedData.parsedActivity = [];
+  const minusSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF4500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
+  const plusSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#32CD32	" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
   parsedData.activity.forEach(act => {
-    let template =
-      [`* ${act.time} <span style="color:green">+${act.plus}</span> <span style="color:red">-${act.minus}</span>`,
-       `  * Activity:`];
-    act.plusReasons.forEach(plusReason => template.push(`    * <span style="color:green">+</span> ${plusReason}`));
-    act.minusReasons.forEach(minusReason => template.push(`    * <span style="color:red">-</span> ${minusReason}`));
+    let template = [
+      "<ul>"," <li>",`   <h3>${act.time} ${plusSVG}${act.plus} ${minusSVG}${act.minus}</h3>`,"     <ul>"
+    ];
+
+    act.plusReasons.forEach(plusReason => template.push(`       <li>${plusSVG} ${plusReason}</li>`));
+    act.minusReasons.forEach(minusReason => template.push(`       <li>${minusSVG} ${minusReason}</li>`));
+
+    template.push(["     </ul>", " </li>", "</ul>"]);
+
     parsedData.parsedActivity.push(template.join("\n"));
   });
 
