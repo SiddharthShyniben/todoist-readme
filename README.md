@@ -88,7 +88,12 @@ The tags will automagically get filled with the specified stats. <u>**_This give
 * `<td-mwsc>`: The length of your longest weekly streak
 * `<td-mwsf>`: The day on which your longest Todoist weekly streak has started
 * `<td-mwst>`: The day on which your longest Todoist daily streak has ended
-* `<td-ka>`: A list showing your Todoist Karma activity
+* `<td-ka>`: A list showing your Todoist Karma activity. There is a known bug: You need to adda single line directly above the element. This is because the `<td-ka>` element is considered as a block element by default, and the markdown inside block elements won't be parsed. Adding a line above makes the element inline (I guess??).
+  Example: 
+  ```markdown
+  Here's a log of my activity...
+  <td-ka></td-ka>
+  ```
 * _More coming soon..._
 
 
