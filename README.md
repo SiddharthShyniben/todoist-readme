@@ -51,7 +51,7 @@ This repo was forked from [abhisheknaiidu/todoist-readme](https://github.com/abh
             runs-on: ubuntu-latest
             steps:
                 - uses: actions/checkout@v2
-                - uses: SiddharthShyniben/todoist-readme@1.2.2
+                - uses: SiddharthShyniben/todoist-readme@1.3.0
                   with:
                       TODOIST_API_KEY: ${{ secrets.TODOIST_API_KEY }}
                       # README_FILE_PATH: "alternate readme file path here; defaults to ./README.md"
