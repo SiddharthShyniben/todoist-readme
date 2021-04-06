@@ -12,6 +12,11 @@ inputs:
     default: ${{ github.repository_owner }}
     required: false
 
+  README_FILE_PATH: 
+    description: 'The path to your README.md file'
+    default: "./README.md"
+    required: false
+
 runs:
   using: "node12"
   main: "dist/index.js"

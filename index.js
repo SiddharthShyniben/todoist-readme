@@ -14,7 +14,7 @@ async function main() {
 }
 
 let jobFailFlag = false;
-const README_FILE_PATH = "./README.md";
+const README_FILE_PATH = core.getInput("README_FILE_PATH");
 
 async function updateReadme(data) {
   if (data) {
