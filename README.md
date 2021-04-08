@@ -1,7 +1,6 @@
 # `todoist-readme`
 
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FSiddharthShyniben%2Ftodoist-readme&count_bg=%2360A5FA&title_bg=%23000000&icon=&icon_color=%23E7E7E7&title=visits&edge_flat=false)](https://hits.seeyoufarm.com)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/y/SiddharthShyniben/todoist-readme)
 ![GitHub contributors](https://img.shields.io/github/contributors/SiddharthShyniben/todoist-readme)
 ![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/SiddharthShyniben/todoist-readme)
 ![Integrates with Todoist](https://img.shields.io/badge/Integrates%20with-Todoist-red?style=flat&logo=todoist&logoColor=white)
@@ -51,7 +50,7 @@ This repo was forked from [abhisheknaiidu/todoist-readme](https://github.com/abh
             runs-on: ubuntu-latest
             steps:
                 - uses: actions/checkout@v2
-                - uses: SiddharthShyniben/todoist-readme@1.2.2
+                - uses: SiddharthShyniben/todoist-readme@1.3.0
                   with:
                       TODOIST_API_KEY: ${{ secrets.TODOIST_API_KEY }}
                       # README_FILE_PATH: "alternate readme file path here; defaults to ./README.md"
