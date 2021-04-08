@@ -136,13 +136,14 @@ const buildReadme = (prevReadmeContent, data) => {
     .replace(/<td-mdst>.*<\/td-mdst>/g, `<td-mdst>${parsedData.goals.max_daily_streak.end}</td-mdst>`)
     .replace(/<td-mwsc>.*<\/td-mwsc>/g, `<td-mwsc>${Humanize.formatNumber(parsedData.goals.max_weekly_streak.count)}</td-mwsc>`)
     .replace(/<td-mwsf>.*<\/td-mwsf>/g, `<td-mwsf>${parsedData.goals.max_weekly_streak.start}</td-mwsf>`)
+    .replace(/<td-mwst>.*<\/td-mwst>/g, `<td-mwst>${parsedData.goals.max_weekly_streak.end}</td-mwst>`)
     .replace(/<td-ka>.*<\/td-ka>/g, `<td-ka>\n${parsedData.parsedActivity.join("\n")}\n</td-ka>`);
   return newContent;
 };
 
 const commitReadme = async () => {
   // Getting config
-  const committerUsername = "SidharthShyniben";
+  const committerUsername = "SiddharthShyniben";
   const committerEmail = "example@gmail.com";
   const commitMessage = "Todoist updated.";
   // Doing commit and push
