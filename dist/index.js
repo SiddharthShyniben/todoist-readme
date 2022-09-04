@@ -658,12 +658,12 @@ const buildReadme = (prevReadmeContent, data) => {
 
 const commitReadme = async () => {
   // Getting config
-  // const committerUsername = "SiddharthShyniben";
-  // const committerEmail = "example@gmail.com";
+  const committerUsername = "github-actions[bot]";
+  const committerEmail = "41898282+github-actions[bot]@users.noreply.github.com";
   const commitMessage = "Todoist updated.";
   // Doing commit and push
-  // await exec("git", ["config", "--global", "user.email", committerEmail]);
-  // await exec("git", ["config", "--global", "user.name", committerUsername]);
+  await exec("git", ["config", "--global", "user.email", committerEmail]);
+  await exec("git", ["config", "--global", "user.name", committerUsername]);
   await exec("git", ["add", README_FILE_PATH]);
   await exec("git", ["commit", "-m", commitMessage]);
   // await exec('git', ['fetch']);
