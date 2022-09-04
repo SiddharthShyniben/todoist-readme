@@ -6,7 +6,7 @@ const relativeTime = require('dayjs/plugin/relativeTime');
 dayjs.extend(relativeTime);
 const fs = require("fs");
 const exec = require("./exec");
-const TODOIST_API_KEY = core.getInput("TODOIST_API_KEY");
+const TODOIST_API_KEY = core.getInput("TODOIST_API_KEY", {required: true});
 
 async function main() {
   const stats = await axios(`https://api.todoist.com/sync/v8.3/completed/get_stats?token=${TODOIST_API_KEY}`);

@@ -521,7 +521,7 @@ const relativeTime = __webpack_require__(916);
 dayjs.extend(relativeTime);
 const fs = __webpack_require__(747);
 const exec = __webpack_require__(898);
-const TODOIST_API_KEY = core.getInput("TODOIST_API_KEY");
+const TODOIST_API_KEY = core.getInput("TODOIST_API_KEY", {required: true});
 
 async function main() {
   const stats = await axios(`https://api.todoist.com/sync/v8.3/completed/get_stats?token=${TODOIST_API_KEY}`);
